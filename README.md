@@ -19,7 +19,8 @@ Thank you, and enjoy!
 ## CLI Arguments
 1) `$QUERY`: [Here](https://github.com/igorbrigadir/twitter-advanced-search) you go.
 2) `$INSTANCE`: [Setup your own](https://github.com/zedeus/nitter/#installation).
-2) `$FORMAT`: "csv" or "json".
+3) `$FORMAT`: "csv" or "json".
+4) `$Limit`: limit the amount of scraped tweets, input should by string ("20" or "500")
 
 # Questions/issues
 > Sir, the bill is: five GitHub stars, two forks and one retweet.

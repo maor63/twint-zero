@@ -50,7 +50,7 @@ func extractViaRegexp(text *string, re string) string {
 	return string(match[:])
 }
 
-func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor *string) bool {
+func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor *string) (bool, int) {
 	parsedWebpage, err := goquery.NewDocumentFromReader(responseBody)
 	if err != nil {
 		log.Fatal("[x] cannot parse webpage. Please report to admins with the query attached.")
@@ -58,7 +58,7 @@ func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor
 	defer responseBody.Close()
 
 	if parsedWebpage.Find("div.timeline-footer").Length() > 0 {
-		return false
+		return false, 0
 	}
 
 	var tweets []Tweet
@@ -95,7 +95,7 @@ func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor
 			strings.TrimSpace(
 				strings.ReplaceAll(
 					tweet_stats.Find("span.tweet-stat").Eq(3).Text(), ",", "")), 10, 64)
-		
+
 		tweet_attachments := make([]Attachment, 0)
 		t.Find("div.attachments").Find("div.attachment.image").Find("img").Each(func(i int, s *goquery.Selection) {
 			src, exists := s.Attr("src")
@@ -171,7 +171,7 @@ func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor
 				Stats:       stats,
 				QuoteFullname: quote_fullname,
 		                QuoteUsername: quote_username,
-		                QuoteDate:     quote_date, 
+		                QuoteDate:     quote_date,
 		                QuoteID:       quote_id,
 		                QuoteText:     quote_text,
 			}
@@ -180,11 +180,10 @@ func Scrape(responseBody io.ReadCloser, Instance *string, Format *string, cursor
 	})
 
 	if len(tweets) == 0 {
-		return false
+		return false, 0
 	}
-
 	FormatTweets(*Format, tweets)
 
 	*cursor, _ = parsedWebpage.Find("div.show-more").Last().Find("a").Attr("href")
-	return true
+	return true, len(tweets)
 }
